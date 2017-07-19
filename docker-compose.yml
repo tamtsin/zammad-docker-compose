@@ -31,9 +31,6 @@ services:
       - zammad-websocket
     ports:
       - "8080:80"
-    environment:
-      - NGINX_HOST=_
-    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     restart: always
     volumes:
       - data-zammad:/home/zammad
