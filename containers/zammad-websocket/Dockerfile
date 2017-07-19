@@ -1,4 +1,4 @@
-FROM zammad/zammad-docker-compose:zammad
+FROM tamtsin/zammad-docker-compose:zammad
 MAINTAINER Zammad <info@zammad.org>
 ARG BUILD_DATE
 
