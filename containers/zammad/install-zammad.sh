@@ -23,7 +23,7 @@ sed -e 's#.*adapter: postgresql#  adapter: nulldb#g' -e 's#.*username:.*#  usern
 bundle exec rake assets:precompile
 
 # set postgresql database adapter
-sed -e 's#.*adapter: postgresql#  adapter: postgresql#g' -e 's#.*username:.*#  username: postgres#g' -e 's#.*password:.*#  password: \n  host: zammad-postgresql\n#g' < config/database.yml.pkgr > config/database.yml
+sed -e 's#.*adapter: postgresql#  adapter: postgresql#g' -e 's#.*database:.*#  database: <%= ENV['DB_NAME'] || 'zammad_production' %>#g' -e 's#.*username:.*#  username: <%= ENV['DB_USER'] || 'zammad_production' %>#g' -e 's#.*password:.*#  password: <%= ENV['DB_PASSWORD'] || '' %> \n  host: <%= ENV['DB_HOST'] || 'zammad-postgresql' %>\n#g' < config/database.yml.pkgr > config/database.yml
 
 # delete assets precompile cache
 rm -r tmp/cache
