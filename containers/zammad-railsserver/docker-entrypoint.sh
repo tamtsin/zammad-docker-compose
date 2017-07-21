@@ -1,9 +1,21 @@
 #!/bin/bash
 
+set -u
+
+# get and set Environment variable
+DATABASE_HOST=$DATABASE_HOST
+DATABASE_NAME=$DATABASE_NAME
+DATABASE_USERNAME=$DATABASE_USERNAME
+DATABASE_PASSWORD=$DATABASE_PASSWORD
+
+cd ${ZAMMAD_DIR}
+# set postgresql database adapter
+sed -e 's#.*adapter: postgresql#  adapter: postgresql#g' -e 's#.*database:.*#  database: '${DATABASE_NAME}'#g' -e 's#.*username:.*#  username: '${DATABASE_USERNAME}'#g' -e 's#.*password:.*#  password: '${DATABASE_PASSWORD}' \n  host: '${DATABASE_HOST}'\n#g' < config/database.yml.pkgr > config/database.yml
+
 if [ "$1" = 'zammad-railsserver' ]; then
 
   # wait for postgres process coming up on zammad-postgresql
-  until (echo > /dev/tcp/zammad-postgresql/5432) &> /dev/null; do
+  until (echo > /dev/tcp/${DATABASE_HOST}/5432) &> /dev/null; do
     echo "zammad railsserver waiting for postgresql server to be ready..."
     sleep 5
   done
@@ -11,7 +23,7 @@ if [ "$1" = 'zammad-railsserver' ]; then
   echo "railsserver can access postgresql server now..."
 
   cd ${ZAMMAD_DIR}
-  bundle exec rails r "Setting.set('es_url', 'http://zammad-elasticsearch:9200')"
+  # bundle exec rails r "Setting.set('es_url', 'http://zammad-elasticsearch:9200')"
   bundle exec rake db:migrate &> /dev/null
 
   if [ $? != 0 ]; then
@@ -19,7 +31,7 @@ if [ "$1" = 'zammad-railsserver' ]; then
     bundle exec rake db:create
     bundle exec rake db:migrate
     bundle exec rake db:seed
-    bundle exec rake searchindex:rebuild
+    # bundle exec rake searchindex:rebuild
   fi
 
   # delete logs
