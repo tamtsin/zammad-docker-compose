@@ -3,27 +3,13 @@ version: '2'
 services:
 
   zammad:
-    depends_on:
-      - zammad-elasticsearch
-      - zammad-postgresql
     image: tamtsin/zammad-docker-compose:zammad
-    environment:
-      - DB_NAME=zammad_production
-      - DB_USER=postgres
-      - DB_PASSWORD=null
-      - DB_HOST=zammad-postgresql
     labels:
       io.rancher.container.pull_image: always
       io.rancher.container.start_once: 'true'
     restart: on-failure
     volumes:
       - data-zammad:/home/zammad
-
-  zammad-elasticsearch:
-    image: tamtsin/zammad-docker-compose:zammad-elasticsearch
-    labels:
-      io.rancher.container.pull_image: always
-    restart: always
 
   zammad-nginx:
     depends_on:
@@ -40,26 +26,17 @@ services:
     volumes:
       - data-zammad:/home/zammad
 
-  zammad-postgresql:
-    image: tamtsin/zammad-docker-compose:zammad-postgresql
-    labels:
-      io.rancher.container.pull_image: always
-    restart: always
-
   zammad-railsserver:
     depends_on:
       - zammad
     image: tamtsin/zammad-docker-compose:zammad-railsserver
     environment:
-      - DB_NAME=zammad_production
-      - DB_USER=postgres
-      - DB_PASSWORD=null
-      - DB_HOST=zammad-postgresql
+      - DATABASE_HOST=zammad-postgresql
+      - DATABASE_NAME=zammad_production
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=password
     labels:
       io.rancher.container.pull_image: always
-    links:
-      - zammad-elasticsearch
-      - zammad-postgresql
     depends_on:
       - zammad
     restart: always
@@ -71,15 +48,12 @@ services:
       - zammad
     image: tamtsin/zammad-docker-compose:zammad-scheduler
     environment:
-      - DB_NAME=zammad_production
-      - DB_USER=postgres
-      - DB_PASSWORD=null
-      - DB_HOST=zammad-postgresql
+      - DATABASE_HOST=zammad-postgresql
+      - DATABASE_NAME=zammad_production
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=password
     labels:
       io.rancher.container.pull_image: always
-    links:
-      - zammad-elasticsearch
-      - zammad-postgresql
     restart: always
     volumes:
       - data-zammad:/home/zammad
@@ -89,14 +63,13 @@ services:
       - zammad
     image: tamtsin/zammad-docker-compose:zammad-websocket
     environment:
-      - DB_NAME=zammad_production
-      - DB_USER=postgres
-      - DB_PASSWORD=null
-      - DB_HOST=zammad-postgresql
+      - DATABASE_HOST=zammad-postgresql
+      - DATABASE_NAME=zammad_production
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=password
     labels:
       io.rancher.container.pull_image: always
     links:
-      - zammad-postgresql
       - zammad
     restart: always
     volumes:

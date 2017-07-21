@@ -6,18 +6,9 @@ services:
     build:
       context: .
       dockerfile: containers/zammad/Dockerfile
-    depends_on:
-      - zammad-elasticsearch
-      - zammad-postgresql
     restart: on-failure
     volumes:
       - data-zammad:/home/zammad
-
-  zammad-elasticsearch:
-    build:
-      context: .
-      dockerfile: containers/zammad-elasticsearch/Dockerfile
-    restart: always
 
   zammad-nginx:
     build:
@@ -29,16 +20,10 @@ services:
       - zammad-railsserver
       - zammad-websocket
     ports:
-      - "80:80"
+      - "8080:80"
     restart: always
     volumes:
       - data-zammad:/home/zammad
-
-  zammad-postgresql:
-    build:
-      context: .
-      dockerfile: containers/zammad-postgresql/Dockerfile
-    restart: always
 
   zammad-railsserver:
     build:
@@ -46,9 +31,6 @@ services:
       dockerfile: containers/zammad-railsserver/Dockerfile
     depends_on:
       - zammad
-    links:
-      - zammad-elasticsearch
-      - zammad-postgresql
     restart: always
     volumes:
       - data-zammad:/home/zammad
@@ -59,9 +41,6 @@ services:
       dockerfile: containers/zammad-scheduler/Dockerfile
     depends_on:
       - zammad
-    links:
-      - zammad-elasticsearch
-      - zammad-postgresql
     restart: always
     volumes:
       - data-zammad:/home/zammad
@@ -72,9 +51,6 @@ services:
       dockerfile: containers/zammad-websocket/Dockerfile
     depends_on:
       - zammad
-    links:
-      - zammad-elasticsearch
-      - zammad-postgresql
     restart: always
     volumes:
       - data-zammad:/home/zammad
